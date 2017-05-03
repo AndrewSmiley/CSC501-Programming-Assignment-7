@@ -130,7 +130,8 @@ public class NetworkADT {
     }
 
     /**
-     * using Dijkstra’s algorithm, this method will determine the shortest path from city1 to city2 and output this path
+     * Using Dijkstra’s algorithm, this method will determine the shortest path from city1 to city2 and output this path
+     * similar to the MST method
      * @param city1 the starting verticie
      * @param city2 the ending verticie
      */
@@ -139,178 +140,66 @@ public class NetworkADT {
 
 //        return -1;
     }
-//    public int getUnsettledCount(boolean unsettled[])
-//    {
-//        int count = 0;
-//        for (int index = 0; index < unsettled.length; index++)
-//        {
-//            if (unsettled[index])
-//            {
-//                count++;
-//            }
-//        }
-//        return count;
-//    }
-//    public void primsAlgorithm(int adjacencyMatrix[][])
-//    {
-//        int evaluationVertex;
-//        for (int source = 1; source <= this.size; source++)
-//        {
-//            for (int destination = 1; destination <= this.size; destination++)
-//            {
-//                this.network[source][destination] = adjacencyMatrix[source][destination];
-//            }
-//        }
-//
-//        for (int index = 1; index <= numberofvertices; index++)
-//        {
-//            key[index] = INFINITE;
-//        }
-//        key[1] = 0;
-//        unsettled[1] = true;
-//        parent[1] = 1;
-//
-//        while (getUnsettledCount(unsettled) != 0)
-//        {
-//            evaluationVertex = getMimumKeyVertexFromUnsettled(unsettled);
-//            unsettled[evaluationVertex] = false;
-//            settled[evaluationVertex] = true;
-//            evaluateNeighbours(evaluationVertex);
-//        }
-//    }
-//
-//    private int getMimumKeyVertexFromUnsettled(boolean[] unsettled2)
-//    {
-//        int min = Integer.MAX_VALUE;
-//        int node = 0;
-//        for (int vertex = 1; vertex <= numberofvertices; vertex++)
-//        {
-//            if (unsettled[vertex] == true && key[vertex] < min)
-//            {
-//                node = vertex;
-//                min = key[vertex];
-//            }
-//        }
-//        return node;
-//    }
-//
-//    public void evaluateNeighbours(int evaluationVertex)
-//    {
-//
-//        for (int destinationvertex = 1; destinationvertex <= numberofvertices; destinationvertex++)
-//        {
-//            if (settled[destinationvertex] == false)
-//            {
-//                if (adjacencyMatrix[evaluationVertex][destinationvertex] != INFINITE)
-//                {
-//                    if (adjacencyMatrix[evaluationVertex][destinationvertex] < key[destinationvertex])
-//                    {
-//                        key[destinationvertex] = adjacencyMatrix[evaluationVertex][destinationvertex];
-//                        parent[destinationvertex] = evaluationVertex;
-//                    }
-//                    unsettled[destinationvertex] = true;
-//                }
-//            }
-//        }
-//    }
-//
-//    public void printMST()
-//    {
-//        System.out.println("SOURCE  : DESTINATION = WEIGHT");
-//        for (int vertex = 2; vertex <= numberofvertices; vertex++)
-//        {
-//            System.out.println(parent[vertex] + "\t:\t" + vertex +"\t=\t"+ adjacencyMatrix[parent[vertex]][vertex]);
-//        }
-//    }
 
-//     A utility function to find the vertex with minimum key
-//     value, from the set of vertices not yet included in MST
-    int minKey(int key[], Boolean mstSet[])
-    {
-
-        // Initialize min value
-        int min = Integer.MAX_VALUE, min_index=-1;
-
-        for (int v = 0; v < size; v++)
-            if (mstSet[v] == false && key[v] < min)
-            {
-                min = key[v];
-                min_index = v;
-            }
-
-        return min_index;
-    }
     /**
-     * using Prim’s algorithm, generate the MST starting at
-     city and output for each node in the Graph aside from city, which city it connects
-     to, as well as the total cost of the MST
-     * @param city
+     * This method, using Prim’s algorithm, will generate the MST starting at city and output for each node in the Graph aside from city, which city it connects to, as well as the total cost of the MST
+     * @param city the starting city
      */
     public void generateMST(String city){
-        // Array to store constructed MST
-//        int size= this.size;//getIndex(city);
-        int parents[] = new int[size];
+//        Array to store constructed MST
+        int mst[] = new int[size];
 
-        // Key values used to pick minimum weight edge in cut
-        int key[] = new int [size];
+        //Store the minimum weights
+        int minimumWeights[] = new int [size];
 
-        // To represent set of vertices not yet included in MST
-        Boolean mstSet[] = new Boolean[size];
+        //This is our array that represents visited nodes
+        Boolean visitedMST[] = new Boolean[size];
+        //fill our arrays
+        Arrays.fill(visitedMST, false);
+        Arrays.fill(minimumWeights, Integer.MAX_VALUE);
 
-        // Initialize all keys as INFINITE
-        for (int i = 0; i < size; i++)
-        {
-            key[i] = Integer.MAX_VALUE;
-            mstSet[i] = false;
-        }
 
         // Always include first 1st vertex in MST.
-        key[0] = 0;//getIndex(city);
+        minimumWeights[0] = 0;
         // picked as first vertex
-        parents[0] = getIndex(city);//-1; // First node is always root of MST
+        mst[0] = getIndex(city);//-1; // First node is always root of MST
 
-        // The MST will have V vertices
+        // The MST will have this.size vertices
         for (int count = 0; count < size-1; count++)
         {
-            // Pick thd minimum key vertex from the set of vertices
-            // not yet included in MST
-            int u = minKey(key, mstSet);
-
-            // Add the picked vertex to the MST Set
-            mstSet[u] = true;
-
-            // Update key value and parent index of the adjacent
-            // vertices of the picked vertex. Consider only those
-            // vertices which are not yet included in MST
+            // Pick the minimum key vertex from the set of vertices that's not in our mst yet
+            int min = Integer.MAX_VALUE;
+            int u =0;
+            //this piece just gets our minimum weight
             for (int v = 0; v < size; v++)
-
-                // graph[u][v] is non zero only for adjacent vertices of m
-                // mstSet[v] is false for vertices not yet included in MST
-                // Update the key only if graph[u][v] is smaller than key[v]
-                if (network[u][v] > 0 && mstSet[v] == false &&
-                        network[u][v] <  key[v])
+                if (visitedMST[v] == false && minimumWeights[v] < min)
                 {
-                    parents[v]  = u;
-                    key[v] = network[u][v];
+                    min = minimumWeights[v];
+                    u = v;
+                }
+
+            // Add the next vertex to the mst
+            visitedMST[u] = true;
+             //itereate over all possible edges
+            for (int i = 0; i < size; i++)
+
+                //basically here we'll see if this edge we're iterating over qualifies to be included in the MST
+                if (network[u][i] > 0 && visitedMST[i] == false && network[u][i] <  minimumWeights[i])
+                {
+                    mst[i]  = u;
+                    minimumWeights[i] = network[u][i];
                 }
         }
-//        printMST(parents);
+        //output all of our connections and sum the weight
+        int totalWeight =0;
         for (int i = 1; i < size; i++) {
-            System.out.println("City "+cities[i]+" connects to  "+cities[parents[i]] );
-//            System.out.println(parents[i] + " - " + i + "    " +
-//                    network[i][parents[i]]);
+            System.out.println("City "+cities[i]+" connects to  "+cities[mst[i]] );
+            totalWeight+=network[i][mst[i]];
         }
+        System.out.println("Total Weight: "+totalWeight);
 
 
     }
-
-//    /**
-//     * This is just a utility function to
-//     * @param parents
-//     */
-//    void printMST(int parents[])
-//    {
-//    }
 
     /**
      * This is our depth first search,
